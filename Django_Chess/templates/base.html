@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Chess Arena{% endblock %}</title>
+{% load static %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d0d0f;
+  --surface: #141418;
+  --surface2: #1c1c22;
+  --border: #2a2a35;
+  --gold: #c9a84c;
+  --gold-light: #e8c97a;
+  --gold-dim: #7a6230;
+  --text: #e8e4d8;
+  --text-dim: #8a8478;
+  --win: #4caf7a;
+  --loss: #cf6679;
+  --draw: #7a8caf;
+  --radius: 4px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Crimson Pro', Georgia, serif;
+  font-size: 17px;
+  min-height: 100vh;
+  line-height: 1.6;
+}
+/* Subtle noise texture */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+nav {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 2rem;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 60px;
+  position: sticky; top: 0; z-index: 100;
+}
+.nav-brand {
+  font-family: 'Cinzel', serif;
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: var(--gold);
+  text-decoration: none;
+  letter-spacing: 0.08em;
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.nav-brand svg { width: 24px; height: 24px; }
+.nav-links { display: flex; align-items: center; gap: 1.5rem; }
+.nav-links a {
+  color: var(--text-dim);
+  text-decoration: none;
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--gold); }
+.nav-elo {
+  background: linear-gradient(135deg, var(--gold-dim), var(--gold));
+  color: var(--bg);
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.05em;
+}
+.container { max-width: 1100px; margin: 0 auto; padding: 2rem; position: relative; z-index: 1; }
+.messages { padding: 1rem 2rem 0; position: relative; z-index: 1; }
+.msg {
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+  border-left: 3px solid var(--gold);
+  background: rgba(201,168,76,0.08);
+  font-size: 0.9rem;
+}
+.msg.error { border-color: var(--loss); background: rgba(207,102,121,0.08); }
+.btn {
+  display: inline-block;
+  padding: 0.6rem 1.5rem;
+  background: linear-gradient(135deg, #2a2a35, #1c1c22);
+  color: var(--gold);
+  border: 1px solid var(--gold-dim);
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-radius: var(--radius);
+}
+.btn:hover { background: linear-gradient(135deg, var(--gold-dim), #3a3220); border-color: var(--gold); }
+.btn-primary {
+  background: linear-gradient(135deg, var(--gold-dim), var(--gold));
+  color: var(--bg);
+  border-color: var(--gold);
+}
+.btn-primary:hover { filter: brightness(1.15); }
+</style>
+</head>
+<body>
+<nav>
+  <a href="/" class="nav-brand">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M12 2L8 6H4l1 4-3 3 3 3-1 4h4l4 4 4-4h4l-1-4 3-3-3-3 1-4h-4L12 2z"/>
+    </svg>
+    Chess Arena
+  </a>
+  <div class="nav-links">
+    <a href="/game/">Play</a>
+    {% if user.is_authenticated %}
+      <a href="/profile/">Profile</a>
+      <span class="nav-elo">ELO {{ user.elo }}</span>
+      <a href="/accounts/logout/">Logout</a>
+    {% else %}
+      <a href="/accounts/login/">Login</a>
+      <a href="/accounts/register/">Register</a>
+    {% endif %}
+  </div>
+</nav>
+{% if messages %}
+<div class="messages">
+  {% for message in messages %}
+    <div class="msg {% if message.tags == 'error' %}error{% endif %}">{{ message }}</div>
+  {% endfor %}
+</div>
+{% endif %}
+{% block content %}{% endblock %}
+</body>
+</html>

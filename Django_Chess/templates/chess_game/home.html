@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block title %}Chess Arena — Play Chess vs AI{% endblock %}
+{% block content %}
+<style>
+.hero { text-align: center; padding: 5rem 2rem 3rem; }
+.hero-chess { font-size: 5rem; line-height: 1; margin-bottom: 1.5rem; filter: drop-shadow(0 0 30px rgba(201,168,76,0.3)); }
+.hero-title { font-family: 'Cinzel', serif; font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 900; color: var(--gold); letter-spacing: 0.05em; margin-bottom: 0.8rem; }
+.hero-sub { color: var(--text-dim); font-size: 1.15rem; max-width: 500px; margin: 0 auto 2.5rem; font-style: italic; }
+.depth-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; max-width: 900px; margin: 0 auto 3rem; }
+.depth-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  text-decoration: none;
+  color: var(--text);
+  transition: all 0.25s;
+  position: relative; overflow: hidden;
+}
+.depth-card::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, transparent, rgba(201,168,76,0.04)); opacity: 0; transition: opacity 0.25s; }
+.depth-card:hover { border-color: var(--gold-dim); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,0.4); }
+.depth-card:hover::before { opacity: 1; }
+.depth-num { font-family: 'Cinzel', serif; font-size: 2.5rem; font-weight: 900; color: var(--gold); line-height: 1; }
+.depth-label { font-family: 'Cinzel', serif; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-dim); margin: 0.4rem 0; }
+.depth-elo { font-size: 0.85rem; color: var(--text-dim); }
+.depth-elo strong { color: var(--gold-light); }
+.section-title { font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 1.5rem; }
+.cta-row { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+</style>
+<div class="container">
+  <div class="hero">
+    <div class="hero-chess">♟</div>
+    <h1 class="hero-title">Chess Arena</h1>
+    <p class="hero-sub">Challenge the machine. Track your ELO. Conquer every depth.</p>
+    {% if user.is_authenticated %}
+      <p class="section-title">Choose your opponent's strength</p>
+      <div class="depth-grid">
+        {% for depth, elo in depths %}
+        <a href="/game/play/?depth={{ depth }}" class="depth-card">
+          <div class="depth-num">{{ depth }}</div>
+          <div class="depth-label">Depth {{ depth }}</div>
+          <div class="depth-elo">AI ELO <strong>{{ elo }}</strong></div>
+        </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="cta-row">
+        <a href="/accounts/register/" class="btn btn-primary">Create Account</a>
+        <a href="/accounts/login/" class="btn">Sign In</a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
